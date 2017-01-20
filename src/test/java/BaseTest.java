@@ -34,13 +34,16 @@ public class BaseTest extends AbstractTestNGSpringContextTests {
     private Configuration freeMarker;
     @Autowired
     private SpringTemplateEngine thymeleaf;
+    
+    private static  final String FROM = "18758595684@163.com";
+    private static  final String TO = "liyuan932a@163.com";
 
     @Test
     public void sendSimpleMail(){
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("18758595684@163.com");
-        message.setTo("liyuan932a@163.com");
-        message.setSubject("test");
+        message.setFrom(FROM);
+        message.setTo(TO);
+        message.setSubject("发送简单文本");
         message.setText("测试");
         mailSender.send(message);
     }
@@ -53,8 +56,8 @@ public class BaseTest extends AbstractTestNGSpringContextTests {
     public void sendMimeMail() throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,true);
-        helper.setFrom("18758595684@163.com");
-        helper.setTo("429621202@qq.com");
+        helper.setFrom(FROM);
+        helper.setTo(TO);
         helper.setSubject("发送附件及html文本");
 
         String htmlText = "<a href='http://www.baidu.com'>百度一下</a>";
@@ -73,8 +76,8 @@ public class BaseTest extends AbstractTestNGSpringContextTests {
     public void sendImgMail() throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,true);
-        helper.setFrom("18758595684@163.com");
-        helper.setTo("429621202@qq.com");
+        helper.setFrom(FROM);
+        helper.setTo(TO);
         helper.setSubject("发送图片");
 
         String htmlText = "<html><body><img src='https://www.baidu.com/img/bd_logo1.png'><img "
@@ -95,14 +98,17 @@ public class BaseTest extends AbstractTestNGSpringContextTests {
     public void sendMailWithVelocityTemplate() throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,true);
-        helper.setFrom("18758595684@163.com");
-        helper.setTo("429621202@qq.com");
+        helper.setFrom(FROM);
+        helper.setTo(TO);
         helper.setSubject("使用velocity模板发送邮件");
 
         Map<String,Object> model = Maps.newHashMap();
-        model.put("username","李远");
+        model.put("name","李远");
+        model.put("text","大家好!!");
         String mailText = VelocityEngineUtils.mergeTemplateIntoString(velocity, "mail/mailTemplate.vm",model);
         helper.setText(new String(mailText.getBytes("utf-8"), "ISO8859-1"),true);
+        ClassPathResource img = new ClassPathResource("mail/bd_logo1.png");
+        helper.addInline("bdLogo",img);
 
         mailSender.send(message);
     }
@@ -115,15 +121,18 @@ public class BaseTest extends AbstractTestNGSpringContextTests {
     public void sendMailWithFreeMarkerTemplate() throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,true);
-        helper.setFrom("18758595684@163.com");
-        helper.setTo("429621202@qq.com");
+        helper.setFrom(FROM);
+        helper.setTo(TO);
         helper.setSubject("使用FreeMarker模板发送邮件");
 
         Map<String,Object> model = Maps.newHashMap();
-        model.put("username","李远");
+        model.put("name","李远");
+        model.put("text","大家好!!");
         Template template = freeMarker.getTemplate("mailTemplate.ftl");
         String mailText = FreeMarkerTemplateUtils.processTemplateIntoString(template,model);
         helper.setText(new String(mailText.getBytes("utf-8"), "ISO8859-1"),true);
+        ClassPathResource img = new ClassPathResource("mail/bd_logo1.png");
+        helper.addInline("bdLogo",img);
 
         mailSender.send(message);
     }
@@ -136,14 +145,17 @@ public class BaseTest extends AbstractTestNGSpringContextTests {
     public void sendMailWithThymeleafTemplate() throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,true);
-        helper.setFrom("18758595684@163.com");
-        helper.setTo("429621202@qq.com");
+        helper.setFrom(FROM);
+        helper.setTo(TO);
         helper.setSubject("使用Thymeleaf模板发送邮件");
 
         Context context = new Context();
-        context.setVariable("username","李远");
+        context.setVariable("name","李远");
+        context.setVariable("text","大家好!!");
         String mailText = thymeleaf.process("mailTemplate.html",context);
         helper.setText(new String(mailText.getBytes("utf-8"), "ISO8859-1"),true);
+        ClassPathResource img = new ClassPathResource("mail/bd_logo1.png");
+        helper.addInline("bdLogo",img);
 
         mailSender.send(message);
     }

@@ -63,11 +63,6 @@ public class RootConfig {
         return freeMarker;
     }
 
-//    @Bean SpringTemplateLoader springTemplateLoader(){
-//        DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-//        SpringTemplateLoader templateLoader = new SpringTemplateLoader(resourceLoader,"classpath:mail/"));
-//    }
-
     @Bean
     public SpringTemplateEngine thymeleaf(Set<ITemplateResolver> resolvers){
         SpringTemplateEngine thymeleaf = new SpringTemplateEngine();
